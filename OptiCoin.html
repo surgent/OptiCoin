@@ -1,11 +1,73 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<title>OptiCoin</title>
 		<script src="OptiCoin.js"></script>
+		<style>
+			#visual {
+				background-color: #000;
+			}
+
+			#layout {
+				margin-top: 16px;
+				background-color: #9cf;
+				border-radius: 4px;
+			}
+
+			#layout th, #layout td {
+				text-align: left;
+				padding: 8px;
+				color: #333;
+				vertical-align: top;
+			}
+
+			#layout th:last-child {
+				width: 200px;
+			}
+		</style>
 	</head>
 	<body>
 		
+		show:
+		<select>
+			<option>Original</option>
+			<option>Threshold</option>
+			<option>Segmentation</option>
+			<option>Points of Interest</option>
+			<option>Alignment</option>
+			<option>Features</option>
+			<option>Data Extraction</option>
+			<option>Results</option>
+		</select>
 
-		
+		<table id="layout">
+			<thead>
+				<tr>
+					<th>visual</th>
+					<th>coin info</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<canvas id="visual" width="1000" height="566"></canvas>
+					</td>
+					<td>
+						N/A
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<script>
+			var cnvs = document.getElementById('visual');
+			var ctx = cnvs.getContext('2d');
+			var input = new Image();
+			input.src = 'many pennies.png';
+			input.onload = function() {
+				ctx.drawImage(input, 0, 0, 2140, 1212, 0, 0, 1000, 566);
+			}
+		</script>
+
 	</body>
 </html>
