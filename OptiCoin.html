@@ -29,15 +29,15 @@
 	<body>
 		
 		show:
-		<select>
-			<option>Original</option>
-			<option>Threshold</option>
-			<option>Segmentation</option>
-			<option>Points of Interest</option>
-			<option>Alignment</option>
-			<option>Features</option>
-			<option>Data Extraction</option>
-			<option>Results</option>
+		<select onchange="show(this.selectedIndex);">
+			<option value="original">Original</option>
+			<option value="threshold">Threshold</option>
+			<option value="segmentation">Segmentation</option>
+			<option value="points of interest">Points of Interest</option>
+			<option value="alignment">Alignment</option>
+			<option value="features">Features</option>
+			<option value="data extraction">Data Extraction</option>
+			<option value="results">Results</option>
 		</select>
 
 		<table id="layout">
@@ -60,12 +60,66 @@
 		</table>
 
 		<script>
-			var cnvs = document.getElementById('visual');
-			var ctx = cnvs.getContext('2d');
+			var display = document.getElementById('visual').getContext('2d');
 			var input = new Image();
 			input.src = 'many pennies.png';
-			input.onload = function() {
-				ctx.drawImage(input, 0, 0, 2140, 1212, 0, 0, 1000, 566);
+			var cnvs = document.createElement('canvas');
+			cnvs.width = 2140;
+			cnvs.height = 1212;
+			var ctx = cnvs.getContext('2d');
+			var step = 0;
+
+			function paint() {
+				ctx.drawImage(input, 0, 0);
+
+				if(step == 0)
+					display.drawImage(input, 0, 0, 2140, 1212, 0, 0, 1000, 566);
+				else if(step > 0) {
+					var buff = ctx.getImageData(0, 0, 2140, 1212);
+					OptiCoin.vectorThreshold(buff, 37, 148, 199, 0.1, 1);
+					
+					if(step == 1) {
+						ctx.putImageData(buff, 0, 0);
+						display.drawImage(cnvs, 0, 0, 2140, 1212, 0, 0, 1000, 566);
+					}
+					else { //Step > 1
+						var segments = OptiCoin.extractSegments(buff, 16, 8);
+
+						if(step == 2) {
+							display.drawImage(input, 0, 0, 2140, 1212, 0, 0, 1000, 566);
+
+							display.lineWidth = 4;
+							for(var i = 0; i < segments.length; ++i) {
+								display.strokeStyle = randColor(1);
+								display.beginPath();
+								display.arc(segments[i].centerX * 1000 / 2140, segments[i].centerY * 1000 / 2140, (segments[i].maxX - segments[i].minX) / 2 * (1000 / 2140), 0, 2 * Math.PI, true);
+								display.closePath();
+								display.stroke();
+							}
+						}
+						else { //Step > 2
+
+						}
+					}
+				}
+
+			}
+			input.onload = paint;
+
+			function show(index) {
+				step = index;
+				paint();
+			}
+
+			function randColor(alpha) {
+				var r = rand255();
+				var g = rand255();
+				var b = rand255();
+				return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')';
+			}
+
+			function rand255() {
+				return ~~(255 * Math.random())
 			}
 		</script>
 
