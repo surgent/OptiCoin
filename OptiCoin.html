@@ -30,14 +30,15 @@
 		
 		show:
 		<select onchange="show(this.selectedIndex);">
-			<option value="original">Original</option>
-			<option value="threshold">Threshold</option>
-			<option value="segmentation">Segmentation</option>
-			<option value="points of interest">Points of Interest</option>
-			<option value="alignment">Alignment</option>
-			<option value="features">Features</option>
-			<option value="data extraction">Data Extraction</option>
-			<option value="results">Results</option>
+			<option>Original</option>
+			<option>Color Mask / Threshold</option>
+			<option>Segmentation</option>
+			<option>Edge Filter</option>
+			<option>Points of Interest</option>
+			<option>Alignment</option>
+			<option>Features</option>
+			<option>Data Extraction</option>
+			<option>Results</option>
 		</select>
 
 		<table id="layout">
@@ -98,7 +99,19 @@
 							}
 						}
 						else { //Step > 2
+							var segment = segments[0];
+							var segX = segment.minX -12;
+							var segY = segment.minY -12;
+							var segWidth = segment.maxX - segment.minX + 24;
+							var segHeight = segment.maxY - segment.minY + 24;
 
+							var buff = ctx.getImageData(segX, segY, segWidth, segHeight);
+							OptiCoin.convolve(buff, OptiCoin.Kernel.GAUSSIAN_BLUR);
+							OptiCoin.convolve(buff, OptiCoin.Kernel.EDGE);
+							OptiCoin.threshold(buff, 96);
+
+							display.clearRect(0, 0, 1000, 566);
+							display.putImageData(buff, (1000 - segWidth) / 2, (566 - segHeight) / 2, 0, 0, segWidth, segHeight - 1);
 						}
 					}
 				}
